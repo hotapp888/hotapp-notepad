@@ -16,5 +16,5 @@ HotApp云笔记, 是基于[HotApp小程序统计云后台](https://weixin.hotapp
 - 云端数据同步, 更换了设备也可以找到以前的笔记
 - 接入了[好推二维码](https://weixin.hotapp.cn)提供的数据统计工具, 可以到平台上查看用户分析、留存分析、事件分析
 
-博客: http://blog.csdn.net/hotapp8/article/details/53391760
+博客: http://blog.csdn.net/hotapp8/article/details/53391760  
 QQ交流群: 173063969
