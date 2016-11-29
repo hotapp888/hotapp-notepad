@@ -62,6 +62,8 @@ Page({
                 wx.showToast({
                     title: "保存成功"
                 });
+                //返回首页
+                wx.navigateBack();
             } else {
                 wx.showToast({
                     title: "保存失败"
