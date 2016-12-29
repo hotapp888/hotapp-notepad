@@ -4,11 +4,19 @@
 ***API 文档地址：https://weixin.hotapp.cn/api
 ***小程序技术讨论QQ群：173063969
 */
-var app = getApp();
+
+var hotapp = require('../../utils/hotapp.js');
+var api = require('../../utils/api.js');
+
 Page({
   data: {
     content: ""
   },
+  
+  onLoad: function(options) {
+    hotapp.onLoad(this, options);
+  },
+  
   onSubmit: function(event) {
     if (!event.detail.value.content) {
         wx.showToast({
@@ -22,8 +30,8 @@ Page({
         content: event.detail.value.content
     })
     var now = Date.parse(new Date());
-    var key = app.globalData.hotapp.getPrefix('feedback');
-    app.globalData.hotapp.post(key, this.data.content, function(res) {
+    var key = hotapp.getPrefix('feedback');
+    hotapp.post(key, this.data.content, function(res) {
         if (res.ret == 0) {
             wx.showToast({
                 title: "提交成功"

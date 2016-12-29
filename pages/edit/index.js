@@ -4,7 +4,10 @@
 ***API 文档地址：https://weixin.hotapp.cn/api
 ***小程序技术讨论QQ群：173063969
 */
-var app = getApp();
+
+var hotapp = require('../../utils/hotapp.js');
+var api = require('../../utils/api.js');
+
 Page({
     data: {
         item: {
@@ -62,7 +65,7 @@ Page({
         this.setData({
             item: item
         });
-        app.store(this.data.item, function(res) {
+        api.store(this.data.item, function(res) {
             if (res) {
                 wx.showToast({
                     title: "保存成功"
@@ -81,7 +84,7 @@ Page({
      * 删除记事本事件
      */
     onDelete: function(event) {
-        app.destroy(this.data.item, function(res) {
+        api.destroy(this.data.item, function(res) {
             if (res) {
                 wx.showToast({
                     title: "删除成功"
@@ -102,7 +105,7 @@ Page({
      */
     loadData: function(key) {
         var that = this;
-        app.show(this.data.item.key, function(res) {
+        api.show(this.data.item.key, function(res) {
             that.setData({
                 item: res
             });

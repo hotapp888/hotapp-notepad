@@ -4,11 +4,17 @@
 ***API 文档地址：https://weixin.hotapp.cn/api
 ***小程序技术讨论QQ群：173063969
 */
-var app = getApp();
+
+var hotapp = require('../../utils/hotapp.js');
+var api = require('../../utils/api.js');
 
 Page({
   data: {
     items: [],
+  },
+
+  onLoad: function(options) {
+    hotapp.onLoad(this, options);
   },
 
   /**
@@ -20,7 +26,7 @@ Page({
     });
     // 获取数据
     var that = this;
-    app.globalData.hotapp.wxlogin(function(res) {
+    hotapp.wxlogin(function(res) {
         that.onLoadData();
     });
   },
@@ -48,7 +54,7 @@ Page({
    */
   onLoadData: function() {
     var that = this;
-    app.getItems(function(items) {
+    api.getItems(function(items) {
       that.setData({
         items: items
       });
@@ -68,21 +74,21 @@ Page({
     var tempData = this.data.items;
     var that = this;
     // 先检查版本, 如果和服务器版本不同, 则需要从服务器拉取数据
-    app.checkVersion(function(shouldPullData) {
+    api.checkVersion(function(shouldPullData) {
       if (shouldPullData) {
         var filters = {
-          prefix: app.globalData.hotapp.getPrefix('item')
+          prefix: hotapp.getPrefix('item')
         };
         // 从服务器拉取所有数据
-        app.globalData.hotapp.searchkey(filters, function(res) {
+        hotapp.searchkey(filters, function(res) {
           if (res.ret == 0) {
             // 拉取成功, 更新版本号
-            app.updateVersion(function(success) {
+            api.updateVersion(function(success) {
               if (success) {
                 // 更新版本号之后把本地数据和服务器数据合并去重
                 tempData = that.syncServerDatatoLocal(tempData, res.data.items);
                 tempData.forEach(function(item, index, arr) {
-                  arr[index] = app.formatItem(item);
+                  arr[index] = api.formatItem(item);
                   arr[index].state = 2;
                 });
                 // 更新视图数据
@@ -111,16 +117,16 @@ Page({
     var that = this;
     // 遍历所有的数据
     data.forEach(function(item, index, items) {
-      app.globalData.hotapp.replaceOpenIdKey(item.key, function(newKey) {
+      hotapp.replaceOpenIdKey(item.key, function(newKey) {
         if (newKey) {
           item.key = newKey;
           // 如果还有数据没有同步过, 则调用post接口同步到服务器
           if (item.state == 1) {
-            app.globalData.hotapp.post(item.key, item.value, function(res) {
+            hotapp.post(item.key, item.value, function(res) {
               if (res.ret == 0) {
                 // 同步成功后更新状态, 并存缓存
                 item.state = 2;
-                item = app.formatItem(item);
+                item = api.formatItem(item);
                 that.setData({
                   items: items
                 });
@@ -131,7 +137,7 @@ Page({
 
           // 如果数据被删除过, 则调用delete接口从服务器删除数据
           if (item.state == 3) {
-            app.globalData.hotapp.del(item.key, function(res) {
+            hotapp.del(item.key, function(res) {
               if (res.ret == 0 || res.ret == 103) {
                 // 服务器的数据删除成功后, 删除本地数据并更新缓存
                 items.splice(index, 1);
@@ -178,7 +184,7 @@ Page({
       // 有相同的key则以服务器端为准
       if (t && t.state != 3) {
         item.state = 2;
-        item = app.formatItem(item);
+        item = api.formatItem(item);
         localHash[item.key] = item;
       }
     });
@@ -187,7 +193,6 @@ Page({
     localData.forEach(function(item, index, arr) {
       var t = serverHash[item.key];
       if (!t && item.state == 2) {
-        console.log(item);
         delete localHash[item.key];
       }
     });
@@ -203,7 +208,6 @@ Page({
       return a.create_time < b.create_time;
     });
 
-    console.log(result);
     return result;
   }
 })

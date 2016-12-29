@@ -1,4 +1,5 @@
 {
+  "debug": true,
   "pages":[
     "pages/index/index",
     "pages/feedback/index",
@@ -7,7 +8,7 @@
   ],
   "window":{
     "navigationBarBackgroundColor": "#ff9b6e",
-    "navigationBarTitleText": "HotApp云笔记",
+    "navigationBarTitleText": "热点记事本",
     "navigationBarTextStyle":"#ffffff",
     "backgroundTextStyle":"light",
     "backgroundColor": "#efeff4",

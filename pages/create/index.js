@@ -4,7 +4,10 @@
 ***API 文档地址：https://weixin.hotapp.cn/api
 ***小程序技术讨论QQ群：173063969
 */
-var app = getApp();
+
+var hotapp = require('../../utils/hotapp.js');
+var api = require('../../utils/api.js');
+
 Page({
     data: {
         item: {
@@ -18,7 +21,11 @@ Page({
             state: 1
         },
         isNew: false,
-        focus: true
+        focus: false
+    },
+
+    onLoad: function(options) {
+        hotapp.onLoad(this, options);
     },
 
     /**
@@ -26,7 +33,7 @@ Page({
      */
     onShow: function() {
         var item = this.data.item;
-        item.key = app.globalData.hotapp.genPrimaryKey('item');
+        item.key = hotapp.genPrimaryKey('item');
         this.setData({
             item: item
         });
@@ -36,7 +43,6 @@ Page({
      * 保存数据事件
      */
     onSubmit: function(event) {
-        console.log(event)
         var item = this.data.item;
         item.value.title = event.detail.value.title;
         item.value.content = event.detail.value.content;
@@ -45,7 +51,11 @@ Page({
         });
         this.saveData();
     },
-
+    onFocus:function(e){
+        this.setData({
+            focus: true
+        });
+    },
     /**
      * 请求服务器保存数据
      */
@@ -57,7 +67,7 @@ Page({
         this.setData({
             item: item
         });
-        app.store(this.data.item, function(res) {
+        api.store(this.data.item, function(res) {
             if (res) {
                 wx.showToast({
                     title: "保存成功"
