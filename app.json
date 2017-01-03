@@ -4,7 +4,8 @@
     "pages/index/index",
     "pages/feedback/index",
     "pages/edit/index",
-    "pages/create/index"
+    "pages/create/index",
+    "pages/about/index"
   ],
   "window":{
     "navigationBarBackgroundColor": "#ff9b6e",
@@ -26,8 +27,8 @@
       "iconPath": "images/icon1.png",
       "selectedIconPath": "images/sicon1.png"
     }, {
-      "pagePath": "pages/feedback/index",
-      "text": "反馈",
+      "pagePath": "pages/about/index",
+      "text": "关于我们",
       "iconPath": "images/icon2.png",
       "selectedIconPath": "images/sicon2.png"
     }]

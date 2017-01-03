@@ -23,7 +23,16 @@ Page({
         isNew: false,
         focus: true
     },
-
+    /**
+     * 分享功能
+     */
+    onShareAppMessage: function () {
+        return {
+            title: '热点记事本',
+            desc: '小程序二维码精准统计平台hotapp,技术讨论QQ群：173063969',
+            path: '/pages/about/edit?hotappPath=edit'
+        }
+    },
     /**
      * 页面首次加载事件
      */

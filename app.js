@@ -14,10 +14,15 @@ App({
     onLaunch: function () {
         
         //使用HotApp小程序统计，统计小程序新增，日活，留存，当日可查看统计结果
-        //hotapp.init('hotapp11377340');
         //线上发布
         hotapp.init('hotapp2427615');
         // 输入debug错误日志, 建议生产环境不要开启
         hotapp.setDebug(true);  
+    },
+    onError:function(msg){
+        //错误统计 2.0.0为版本号
+        hotapp.onError(msg,'2.0.0',function (err) {
+             console.log(err)
+        })
     }
 })

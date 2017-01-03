@@ -14,6 +14,7 @@ Page({
   },
 
   onLoad: function(options) {
+    //二维码参数统计
     hotapp.onLoad(this, options);
   },
 
@@ -30,7 +31,16 @@ Page({
         that.onLoadData();
     });
   },
-
+  /**
+   * 分享网页
+   */
+   onShareAppMessage: function () {
+    return {
+      title: '热点记事本',
+      desc: '小程序二维码精准统计平台hotapp,技术讨论QQ群：173063969',
+      path: '/pages/about/index?hotappPath=index'
+    }
+  },
   /**
    * 新增笔记事件
    */

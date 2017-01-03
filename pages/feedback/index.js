@@ -33,8 +33,18 @@ Page({
     networkType: '',//判断当前网络类型
     addtell: {
       addtellHidden: true,//弹出框显示/隐藏
-      
+
     },
+  },
+  /***
+   * 分享功能
+   */
+  onShareAppMessage: function () {
+    return {
+      title: '热点记事本',
+      desc: '小程序二维码精准统计平台hotapp,技术讨论QQ群：173063969',
+      path: '/pages/about/feedback?hotappPath=feedback'
+    }
   },
 
   onLoad: function (options) {
@@ -55,7 +65,7 @@ Page({
             that.setData({
               userInfo: res.userInfo
             })
-  
+
             typeof cb == "function" && cb(res.userInfo)
           }
         })
@@ -84,18 +94,18 @@ Page({
 
     //当sendflag有值的时候，设置发送按钮显示
     this.setData({
-      sendflag:true
+      sendflag: true
     })
   },
 
   bindblur: function (e) {
- var that = this;
-  this.setData({
-      sendflag:false
+    var that = this;
+    this.setData({
+      sendflag: false
     })
     //提交输入框的数据
     if (e.detail.value != '' && this.data.networkType != 'fail') {
-     
+
       //获取当前时间
       var myDate = new Date();
       var hours = myDate.getHours();       //获取当前小时数(0-23)
@@ -134,7 +144,7 @@ Page({
         feedback: newfeedback
       })
       //上传文字到服务器
-      
+
       hotapp.feedback(e.detail.value, 0, that.data.contract_info, function (res) {
 
         wx.showToast({
@@ -144,8 +154,8 @@ Page({
         })
       })
     }
-    
-    
+
+
   },
   bindtapimg: function () {
     //打开添加图片框
@@ -184,7 +194,7 @@ Page({
         feedback: newfeedback
       })
       //添加图片到服务器
-     
+
       hotapp.feedback(res, 1, that.data.contract_info, function (res) {
         console.log(res)
       })
@@ -222,7 +232,7 @@ Page({
       contract_info: e.detail.value,
       addtell: {
         addtellHidden: false,
-      
+
       }
     })
 
