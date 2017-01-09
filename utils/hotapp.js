@@ -1,35 +1,758 @@
 /*
 *** HotApp小程序统计sdk, 上海芝麻小事网络科技版权所有
 *** 官网: https://weixin.hotapp.cn/
-*** 版本 1.4.1
+*** 版本 1.4.0
 */
-var hotAppHost="https://wxapi.hotapp.cn",hotAppKey="",hotAppUUID="",userInfo="",hotAppVersion="1.4.0",hotAppUUIDCache="hotAppUUID",hotAppEventCache="hotAppEvent",hotAppOpenIdCache="hotAppOpenId",uploadType=0,debugarr=[],hotAppDebug=!1;function onError(a,f,b){if(""==hotAppKey)log("hotapp key is empty");else{var c=getSystemInfo(),d=getUserInfo(),e=hotAppHost+"/api/error";a={appkey:getHotAppKey(),system_info:c,user_info:d,version:f,msg:a};http(e,a,b)}}function getVersion(){return hotAppVersion}
-function setDebug(a){hotAppDebug=void 0===a?!1:a}function log(a){hotAppDebug&&console.log(a)}function getOpenID(){return wx.getStorageSync(hotAppOpenIdCache)}function setOpenID(a){wx.setStorageSync(hotAppOpenIdCache,a)}function getLocalKey(){var a=wx.getStorageSync("key");if(a)return a;a=userInfo.avatarUrl?hotAppKey+userInfo.avatarUrl:hotAppKey+parseInt(9E4*Math.random()+1E4,10);a=hex_md5(a);wx.setStorageSync("key",a);return a}function getFakeOpenID(){var a=getOpenID();return a?a:getLocalKey()}
-function getPrefix(a){return a+"_"+getFakeOpenID()}function genPrimaryKey(a){var f=Date.parse(new Date);return a+"_"+getFakeOpenID()+"_"+1E3*f}function replaceOpenIdKey(a,f){if(!getOpenID())return"function"==typeof f&&f(!1);var b=a.replace("_"+getLocalKey()+"_","_"+getOpenID()+"_");return"function"==typeof f&&f(b)}
-function login(a){if(!hotAppKey)return"function"==typeof a&&a(getFakeOpenID());var f=getOpenID();if(f)return"function"==typeof a&&a(f);wx.login({success:function(b){if(b.code)wx.request({url:hotAppHost+"/data/wechat/login",data:{hotAppKey:getHotAppKey(),code:b.code},method:"POST",success:function(b){return(b=b.data.openid)?(setOpenID(b),"function"==typeof a&&a(b)):"function"==typeof a&&a(getFakeOpenID())},fail:function(){return"function"==typeof a&&a(getFakeOpenID())}});else return"function"==typeof a&&
-a(getFakeOpenID())},fail:function(){return"function"==typeof a&&a(getFakeOpenID())}})}
-function init(a){if(!a)return log("appkey\u4e0d\u80fd\u4e3a\u7a7a"),"function"==typeof cb&&cb(!1);if(hotAppKey)return log("\u5df2\u7ecf\u521d\u59cb\u5316\u8fc7\u4e86"),"function"==typeof cb&&cb(!1);hotAppKey=a;wx.login({success:function(a){getOpenID()?wx.getUserInfo({success:function(a){userInfo=a.userInfo;sendLaunch()}}):getHotAppUUID()?wx.getUserInfo({success:function(a){userInfo=a.userInfo;sendLaunch()}}):a.code?wx.request({url:hotAppHost+"/data/wechat/login",data:{hotAppKey:getHotAppKey(),code:a.code},
-method:"POST",success:function(a){(a=a.data.openid)&&setOpenID(a);wx.getUserInfo({success:function(a){userInfo=a.userInfo;sendLaunch()}})},fail:function(){wx.getUserInfo({success:function(a){userInfo=a.userInfo;sendLaunch()}})}}):wx.getUserInfo({success:function(a){userInfo=a.userInfo;sendLaunch()}})},fail:function(){wx.getUserInfo({success:function(a){userInfo=a.userInfo;sendLaunch()}})}})}
-function sendLaunch(){wx.request({url:hotAppHost+"/data/wechat/launch",data:{hotAppKey:getHotAppKey(),openId:getOpenID(),hotAppUUID:getHotAppUUID(),userInfo:getUserInfo(),systemInfo:getSystemInfo(),phoneTime:Date.parse(new Date)/1E3,hotAppVersion:hotAppVersion},method:"POST",success:function(a){0==uploadType&&(uploadType=a.data.upload_type);if(0!=uploadType){var f=wx.getStorageSync("hotAppEvent")||[];0!=f.length&&wx.request({url:hotAppHost+"/data/wechat/event",data:{hotAppKey:getHotAppKey(),openId:wetChatOpenId,
-hotAppUUID:getHotAppUUID(),eventArray:f},method:"POST",success:function(a){log(wx.getStorageSync("hotAppEvent")||[]);log(a.data);try{wx.removeStorageSync("hotAppEvent")}catch(c){log(c)}},fail:function(){log("send event fail");wx.setStorageSync("hotAppEvent",f)}})}},fail:function(a){log("send launch fail "+a)}})}
-function onEvent(a,f){f=void 0===f?"":f;if(""==hotAppKey)log("hotappkey is empty");else{var b=wx.getStorageSync("hotAppEvent")||[],c={eventId:a,eventValue:f,phoneTime:Date.parse(new Date)/1E3};b.push(c);0!=uploadType?wx.setStorageSync("hotAppEvent",b):wx.request({url:hotAppHost+"/data/wechat/event",data:{hotAppKey:getHotAppKey(),openId:getOpenID(),hotAppUUID:getHotAppUUID(),eventArray:b,hotAppVersion:hotAppVersion},method:"POST",success:function(a){log(wx.getStorageSync("hotAppEvent")||[]);try{wx.removeStorageSync("hotAppEvent")}catch(b){log(b)}},
-fail:function(){log("send event fail");wx.setStorageSync("hotAppEvent",b)}})}}function getHotAppUUID(){if(""==hotAppKey)log("hotappkey is empty");else{if(""==hotAppUUID)if(""==wx.getStorageSync(hotAppUUIDCache)){if(""==userInfo)return log("userInfo is null"),"";hotAppUUID=""==userInfo.avatarUrl?hex_md5(hotAppKey+userInfo.nickName):hex_md5(hotAppKey+userInfo.avatarUrl);wx.setStorageSync(hotAppUUIDCache,hotAppUUID)}else hotAppUUID=wx.getStorageSync(hotAppUUIDCache);return hotAppUUID}}
-function getHotAppKey(){return hotAppKey}function clearData(){hotAppUUID="";wx.clearStorage()}function getUserInfo(){return userInfo}function getSystemInfo(){return wx.getSystemInfoSync()}function setEventUploadType(a){uploadType=a}var hexcase=0,b64pad="",chrsz=8;function hex_md5(a){return"uuid_"+binl2hex(core_md5(str2binl(a),a.length*chrsz))}function b64_md5(a){return binl2b64(core_md5(str2binl(a),a.length*chrsz))}function str_md5(a){return binl2str(core_md5(str2binl(a),a.length*chrsz))}
-function hex_hmac_md5(a,f){return binl2hex(core_hmac_md5(a,f))}function b64_hmac_md5(a,f){return binl2b64(core_hmac_md5(a,f))}function str_hmac_md5(a,f){return binl2str(core_hmac_md5(a,f))}
-function core_md5(a,f){a[f>>5]|=128<<f%32;a[(f+64>>>9<<4)+14]=f;for(var b=1732584193,c=-271733879,d=-1732584194,e=271733878,g=0;g<a.length;g+=16)var h=b,k=c,l=d,m=e,b=md5_ff(b,c,d,e,a[g+0],7,-680876936),e=md5_ff(e,b,c,d,a[g+1],12,-389564586),d=md5_ff(d,e,b,c,a[g+2],17,606105819),c=md5_ff(c,d,e,b,a[g+3],22,-1044525330),b=md5_ff(b,c,d,e,a[g+4],7,-176418897),e=md5_ff(e,b,c,d,a[g+5],12,1200080426),d=md5_ff(d,e,b,c,a[g+6],17,-1473231341),c=md5_ff(c,d,e,b,a[g+7],22,-45705983),b=md5_ff(b,c,d,e,a[g+8],7,
-1770035416),e=md5_ff(e,b,c,d,a[g+9],12,-1958414417),d=md5_ff(d,e,b,c,a[g+10],17,-42063),c=md5_ff(c,d,e,b,a[g+11],22,-1990404162),b=md5_ff(b,c,d,e,a[g+12],7,1804603682),e=md5_ff(e,b,c,d,a[g+13],12,-40341101),d=md5_ff(d,e,b,c,a[g+14],17,-1502002290),c=md5_ff(c,d,e,b,a[g+15],22,1236535329),b=md5_gg(b,c,d,e,a[g+1],5,-165796510),e=md5_gg(e,b,c,d,a[g+6],9,-1069501632),d=md5_gg(d,e,b,c,a[g+11],14,643717713),c=md5_gg(c,d,e,b,a[g+0],20,-373897302),b=md5_gg(b,c,d,e,a[g+5],5,-701558691),e=md5_gg(e,b,c,d,a[g+
-10],9,38016083),d=md5_gg(d,e,b,c,a[g+15],14,-660478335),c=md5_gg(c,d,e,b,a[g+4],20,-405537848),b=md5_gg(b,c,d,e,a[g+9],5,568446438),e=md5_gg(e,b,c,d,a[g+14],9,-1019803690),d=md5_gg(d,e,b,c,a[g+3],14,-187363961),c=md5_gg(c,d,e,b,a[g+8],20,1163531501),b=md5_gg(b,c,d,e,a[g+13],5,-1444681467),e=md5_gg(e,b,c,d,a[g+2],9,-51403784),d=md5_gg(d,e,b,c,a[g+7],14,1735328473),c=md5_gg(c,d,e,b,a[g+12],20,-1926607734),b=md5_hh(b,c,d,e,a[g+5],4,-378558),e=md5_hh(e,b,c,d,a[g+8],11,-2022574463),d=md5_hh(d,e,b,c,a[g+
-11],16,1839030562),c=md5_hh(c,d,e,b,a[g+14],23,-35309556),b=md5_hh(b,c,d,e,a[g+1],4,-1530992060),e=md5_hh(e,b,c,d,a[g+4],11,1272893353),d=md5_hh(d,e,b,c,a[g+7],16,-155497632),c=md5_hh(c,d,e,b,a[g+10],23,-1094730640),b=md5_hh(b,c,d,e,a[g+13],4,681279174),e=md5_hh(e,b,c,d,a[g+0],11,-358537222),d=md5_hh(d,e,b,c,a[g+3],16,-722521979),c=md5_hh(c,d,e,b,a[g+6],23,76029189),b=md5_hh(b,c,d,e,a[g+9],4,-640364487),e=md5_hh(e,b,c,d,a[g+12],11,-421815835),d=md5_hh(d,e,b,c,a[g+15],16,530742520),c=md5_hh(c,d,e,
-b,a[g+2],23,-995338651),b=md5_ii(b,c,d,e,a[g+0],6,-198630844),e=md5_ii(e,b,c,d,a[g+7],10,1126891415),d=md5_ii(d,e,b,c,a[g+14],15,-1416354905),c=md5_ii(c,d,e,b,a[g+5],21,-57434055),b=md5_ii(b,c,d,e,a[g+12],6,1700485571),e=md5_ii(e,b,c,d,a[g+3],10,-1894986606),d=md5_ii(d,e,b,c,a[g+10],15,-1051523),c=md5_ii(c,d,e,b,a[g+1],21,-2054922799),b=md5_ii(b,c,d,e,a[g+8],6,1873313359),e=md5_ii(e,b,c,d,a[g+15],10,-30611744),d=md5_ii(d,e,b,c,a[g+6],15,-1560198380),c=md5_ii(c,d,e,b,a[g+13],21,1309151649),b=md5_ii(b,
-c,d,e,a[g+4],6,-145523070),e=md5_ii(e,b,c,d,a[g+11],10,-1120210379),d=md5_ii(d,e,b,c,a[g+2],15,718787259),c=md5_ii(c,d,e,b,a[g+9],21,-343485551),b=safe_add(b,h),c=safe_add(c,k),d=safe_add(d,l),e=safe_add(e,m);return[b,c,d,e]}function md5_cmn(a,f,b,c,d,e){return safe_add(bit_rol(safe_add(safe_add(f,a),safe_add(c,e)),d),b)}function md5_ff(a,f,b,c,d,e,g){return md5_cmn(f&b|~f&c,a,f,d,e,g)}function md5_gg(a,f,b,c,d,e,g){return md5_cmn(f&c|b&~c,a,f,d,e,g)}
-function md5_hh(a,f,b,c,d,e,g){return md5_cmn(f^b^c,a,f,d,e,g)}function md5_ii(a,f,b,c,d,e,g){return md5_cmn(b^(f|~c),a,f,d,e,g)}function core_hmac_md5(a,f){var b=str2binl(a);16<b.length&&(b=core_md5(b,a.length*chrsz));for(var c=Array(16),d=Array(16),e=0;16>e;e++)c[e]=b[e]^909522486,d[e]=b[e]^1549556828;b=core_md5(c.concat(str2binl(f)),512+f.length*chrsz);return core_md5(d.concat(b),640)}function safe_add(a,f){var b=(a&65535)+(f&65535);return(a>>16)+(f>>16)+(b>>16)<<16|b&65535}
-function bit_rol(a,f){return a<<f|a>>>32-f}function str2binl(a){for(var f=[],b=(1<<chrsz)-1,c=0;c<a.length*chrsz;c+=chrsz)f[c>>5]|=(a.charCodeAt(c/chrsz)&b)<<c%32;return f}function binl2str(a){for(var f="",b=(1<<chrsz)-1,c=0;c<32*a.length;c+=chrsz)f+=String.fromCharCode(a[c>>5]>>>c%32&b);return f}function binl2hex(a){for(var f=hexcase?"0123456789ABCDEF":"0123456789abcdef",b="",c=0;c<4*a.length;c++)b+=f.charAt(a[c>>2]>>c%4*8+4&15)+f.charAt(a[c>>2]>>c%4*8&15);return b}
-function binl2b64(a){for(var f="",b=0;b<4*a.length;b+=3)for(var c=(a[b>>2]>>b%4*8&255)<<16|(a[b+1>>2]>>(b+1)%4*8&255)<<8|a[b+2>>2]>>(b+2)%4*8&255,d=0;4>d;d++)f=8*b+6*d>32*a.length?f+b64pad:f+"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(c>>6*(3-d)&63);return f}function searchkey(a,f){var b=hotAppHost+"/api/searchkey",c={appkey:hotAppKey},d;for(d in a)c[d]=a[d];http(b,c,f)}function get(a,f){http(hotAppHost+"/api/get",{appkey:hotAppKey,key:a},f)}
-function post(a,f,b){http(hotAppHost+"/api/post",{appkey:hotAppKey,key:a,value:f},b)}function del(a,f){var b=hotAppHost+"/api/delete",c={appkey:getHotAppKey(),key:a};http(b,c,f)}function feedback(a,f,b,c){var d=getSystemInfo(),e=getUserInfo();if(!e)return log("userinfo is empty"),"function"==typeof c&&c(!1);var g=hotAppHost+"/api/feedback";a={appkey:getHotAppKey(),content:a,openid:getOpenID()?getOpenID():getFakeOpenID(),content_type:f,contract_info:b,system_info:d,user_info:e};http(g,a,c)}
-function uploadFeedbackImage(a){wx.chooseImage({success:function(f){console.log(f);wx.uploadFile({url:hotAppHost+"/api/feedback/image/upload",filePath:f.tempFilePaths[0],name:"file",formData:{appkey:getHotAppKey()},success:function(b){b=JSON.parse(b.data);return 0==b.ret?"function"==typeof a&&a(b.image_url):"function"==typeof a&&a(!1)},fail:function(b){return"function"==typeof a&&a(!1)}})},fail:function(f){return"function"==typeof a&&a(!1)}})}
-function http(a,f,b){wx.request({url:a,data:f,method:"POST",header:{"content-type":"application/json"},success:function(a){return"function"==typeof b&&b(a.data)},fail:function(){return"function"==typeof b&&b(!1)}})}
-function request(a){0==a.useProxy?wx.request({url:a.url,data:a.data,header:a.header,method:a.method,success:function(f){a.success(f)},fail:function(f){a.fail(f)},complete:function(f){try{a.complete(f)}catch(b){log(b)}}}):""==hotAppKey?log("hotappkey is empty"):wx.request({url:hotAppHost+"/proxy/?appkey="+hotAppKey+"&url="+a.url,data:a.data,header:a.header,method:a.method,success:function(f){a.success(f)},fail:function(f){a.fail(f)},complete:function(f){try{a.complete(f)}catch(b){log(b)}}})}
-function onLoad(a,f){"object"==typeof a&&a.__route__?"object"!=typeof f||0==Object.getOwnPropertyNames(f).length?log("param error"):""==hotAppKey?log("hotapp key is empty"):login(function(b){var c=hotAppHost+"/data/wechat/param";b={hotAppKey:hotAppKey,page:a.__route__,openId:b,hotAppUUID:getHotAppUUID(),paraInfo:f};http(c,b)}):log("param error")}
-function onShare(a,f,b,c,d){if("object"==typeof b&&b.__route__){var e=b.__route__+"?"+c+"&"+d;if(""==hotAppKey)log("hotapp key is empty");else return login(function(a){var b=hotAppHost+"/data/wechat/onshare";a={hotAppKey:hotAppKey,page:e,openId:a,hotAppUUID:getHotAppUUID()};http(b,a)}),{title:a,desc:f,path:e}}else log("this error")}
-function Share(a,f,b){if(""==hotAppKey)log("hotapp key is empty");else return login(function(a){var b=hotAppHost+"/data/wechat/share";a={hotAppKey:hotAppKey,page:path,openId:a,hotAppUUID:getHotAppUUID()};http(b,a)}),{title:a,desc:f,path:b}}
-module.exports={init:init,onEvent:onEvent,setEventUploadType:setEventUploadType,clearData:clearData,wxlogin:login,getFakeOpenID:getFakeOpenID,getOpenID:getOpenID,getPrefix:getPrefix,genPrimaryKey:genPrimaryKey,replaceOpenIdKey:replaceOpenIdKey,searchkey:searchkey,get:get,post:post,del:del,request:request,getVersion:getVersion,setDebug:setDebug,feedback:feedback,uploadFeedbackImage:uploadFeedbackImage,onError:onError,onLoad:onLoad,onShare:onShare,Share:Share};
+var hotAppHost = "https://wxapi.hotapp.cn",
+    hotAppKey = "",
+    hotAppUUID = "",
+    userInfo = "",
+    hotAppVersion = "1.4.0",
+    hotAppUUIDCache = "hotAppUUID",
+    hotAppEventCache = "hotAppEvent",
+    hotAppOpenIdCache = 'hotAppOpenId',
+    uploadType = 0,
+    debugarr = [],
+    hotAppDebug = false;
+
+function onError(msg,version,cb) {
+    if (hotAppKey == '') {
+        log('hotapp key is empty');
+        return;
+    }
+    var system_info = getSystemInfo();
+    var user_info = getUserInfo();
+    var url = hotAppHost + "/api/error";
+    var data = {
+        appkey: getHotAppKey(),
+        system_info: system_info,
+        user_info: user_info,
+        version:version,
+        msg: msg
+    };
+    http(url, data, cb);
+}
+
+
+function getVersion() {
+    return hotAppVersion;
+}
+
+function setDebug(isDebug = false) {
+    hotAppDebug = isDebug;
+}
+
+function log(data) {
+    if (hotAppDebug) {
+        console.log(data);
+    }
+}
+
+function getOpenID() {
+    return wx.getStorageSync(hotAppOpenIdCache);
+}
+
+function setOpenID(openid) {
+    wx.setStorageSync(hotAppOpenIdCache, openid);
+}
+
+function getLocalKey() {
+    var cache = wx.getStorageSync('key');
+    if (cache) {
+        return cache;
+    } else {
+        var salt = userInfo.avatarUrl ? hotAppKey + userInfo.avatarUrl : hotAppKey + userInfo.nickName;
+        var key =  hex_md5(salt);
+        wx.setStorageSync('key', key);
+        return key;
+    }
+}
+
+function getFakeOpenID() {
+    var openid = getOpenID();
+    if (openid) {
+        return openid;
+    } else {
+        return getLocalKey();
+    }
+}
+
+function getPrefix(prefix) {
+    return prefix + "_" + getFakeOpenID();
+}
+
+function genPrimaryKey(prefix) {
+    var now = Date.parse(new Date());
+    return prefix + "_" + getFakeOpenID() + "_" + now * 1000;
+}
+
+function replaceOpenIdKey(primaryKey, cb) {
+    var openid = getOpenID();
+    if (!openid) {
+        return typeof cb == 'function' && cb(false);
+    }
+    var newPrimaryKey = primaryKey.replace("_" + getLocalKey() + "_", "_" + getOpenID() + "_");
+    return typeof cb == 'function' && cb(newPrimaryKey);
+}
+
+function login(cb) {
+    if (!hotAppKey) {
+        return typeof cb == 'function' && cb(getFakeOpenID());
+    }
+
+    var openid = getOpenID();
+    if (openid) {
+        return typeof cb == 'function' && cb(openid);
+    }
+
+    wx.login({
+        success: function (res) {
+            if (res.code) {
+                wx.request({
+                    url: hotAppHost + "/data/wechat/login",
+                    data: {
+                        hotAppKey: getHotAppKey(),
+                        code: res.code
+                    },
+                    method: "POST",
+                    success: function (a) {
+                        
+                        var openid = a.data.openid;
+                        if (openid) {
+                            setOpenID(openid);
+                            return typeof cb == 'function' && cb(openid);
+                        } else {
+                            return typeof cb == 'function' && cb(getFakeOpenID());
+                        }
+                    },
+                    fail: function () {
+                        return typeof cb == 'function' && cb(getFakeOpenID());
+                    }
+                })
+            } else {
+                return typeof cb == 'function' && cb(getFakeOpenID());
+            }
+        },
+        fail: function () {
+            return typeof cb == 'function' && cb(getFakeOpenID());
+        }
+    })
+}
+
+function init(appkey) {
+    if (!appkey) {
+        log('appkey不能为空');
+        return typeof cb == 'function' && cb(false);
+    }
+    if (hotAppKey) {
+        log('已经初始化过了');
+        return typeof cb == 'function' && cb(false);
+    }
+    hotAppKey = appkey;
+
+    wx.login({
+        success: function (g) {
+            var openid = getOpenID();
+            if (openid) {
+                wx.getUserInfo({
+                    success: function (res) {
+                        userInfo = res.userInfo;
+                        sendLaunch();
+                    }
+                });
+                return;
+            }
+
+            if (getHotAppUUID()) {
+                wx.getUserInfo({
+                    success: function (res) {
+                        userInfo = res.userInfo;
+                        sendLaunch();
+                    }
+                });
+                return;
+            }
+
+            if (g.code) {
+                wx.request({
+                    url: hotAppHost + "/data/wechat/login",
+                    data: {
+                        hotAppKey: getHotAppKey(),
+                        code: g.code
+                    },
+                    method: "POST",
+                    success: function (a) {
+                        var openid = a.data.openid;
+                        if (openid) {
+                            setOpenID(openid);
+                        }
+                        wx.getUserInfo({
+                            success: function (res) {
+                                userInfo = res.userInfo;
+                                sendLaunch();
+                            }
+                        });
+                    },
+                    fail: function () {
+                        wx.getUserInfo({
+                            success: function (res) {
+                                userInfo = res.userInfo;
+                                sendLaunch();
+                            }
+                        });
+                    }
+                })
+            } else {
+                wx.getUserInfo({
+                    success: function (res) {
+                        userInfo = res.userInfo;
+                        sendLaunch();
+                    }
+                });
+            }
+        },
+        fail: function () {
+            wx.getUserInfo({
+                success: function (res) {
+                    userInfo = res.userInfo;
+                    sendLaunch();
+                }
+            });
+        }
+    })
+}
+
+function sendLaunch() {
+    wx.request({
+        url: hotAppHost + "/data/wechat/launch",
+        data: {
+            hotAppKey: getHotAppKey(),
+            openId: getOpenID(),
+            hotAppUUID: getHotAppUUID(),
+            userInfo: getUserInfo(),
+            systemInfo: getSystemInfo(),
+            phoneTime: Date.parse(new Date) / 1E3,
+            hotAppVersion: hotAppVersion
+        },
+        method: "POST",
+        success: function (b) {
+            0 == uploadType && (uploadType = b.data.upload_type);
+            if (0 != uploadType) {
+                var g = wx.getStorageSync("hotAppEvent") || [];
+                if (0 == g.length) return;
+                wx.request({
+                    url: hotAppHost + "/data/wechat/event",
+                    data: {
+                        hotAppKey: getHotAppKey(),
+                        openId: wetChatOpenId,
+                        hotAppUUID: getHotAppUUID(),
+                        eventArray: g
+                    },
+                    method: "POST",
+                    success: function (a) {
+                        log(wx.getStorageSync("hotAppEvent") || []);
+                        log(a.data);
+                        try {
+                            wx.removeStorageSync("hotAppEvent")
+                        } catch (c) {
+                            log(c)
+                        }
+                    },
+                    fail: function () {
+                        log("send event fail");
+                        wx.setStorageSync("hotAppEvent", g)
+                    }
+                })
+            }
+        },
+        fail: function (res) {
+            log("send launch fail " + res);
+        }
+    })
+}
+
+function onEvent(b, g) {
+    g = void 0 === g ? "" : g;
+    if ("" == hotAppKey) {
+        log('hotappkey is empty');
+    } else {
+        var a = wx.getStorageSync("hotAppEvent") || [],
+            c = {
+                eventId: b,
+                eventValue: g,
+                phoneTime: Date.parse(new Date) / 1E3
+            };
+        a.push(c);
+        0 != uploadType ? wx.setStorageSync("hotAppEvent", a) : wx.request({
+            url: hotAppHost + "/data/wechat/event",
+            data: {
+                hotAppKey: getHotAppKey(),
+                openId: getOpenID(),
+                hotAppUUID: getHotAppUUID(),
+                eventArray: a,
+                hotAppVersion: hotAppVersion
+            },
+            method: "POST",
+            success: function (a) {
+                log(wx.getStorageSync("hotAppEvent") || []);
+                try {
+                    wx.removeStorageSync("hotAppEvent")
+                } catch (d) {
+                    log(d)
+                }
+            },
+            fail: function () {
+                log('send event fail');
+                wx.setStorageSync("hotAppEvent", a)
+            }
+        })
+    }
+}
+
+function getHotAppUUID() {
+    if ("" == hotAppKey) {
+        log('hotappkey is empty');
+    } else {
+        if ("" == hotAppUUID) if ("" == wx.getStorageSync(hotAppUUIDCache)) {
+            if ("" == userInfo) return log("userInfo is null"), "";
+            var salt = userInfo.avatarUrl ? hotAppKey + userInfo.avatarUrl : hotAppKey + userInfo.nickName;
+            hotAppUUID =  hex_md5(salt);
+            //hotAppUUID = "" == userInfo.avatarUrl ? hex_md5(hotAppKey + userInfo.avatarUrl) : hex_md5(hotAppKey + userInfo.nickName);
+            wx.setStorageSync(hotAppUUIDCache, hotAppUUID)
+        } else hotAppUUID = wx.getStorageSync(hotAppUUIDCache);
+
+        return hotAppUUID
+    }
+}
+function getHotAppKey() {
+    return hotAppKey
+}
+
+function clearData() {
+    hotAppUUID = "";
+    wx.clearStorage()
+}
+function getUserInfo() {
+    return userInfo
+}
+function getSystemInfo() {
+    return wx.getSystemInfoSync()
+}
+function setEventUploadType(b) {
+    uploadType = b
+}
+var hexcase = 0,
+    b64pad = "",
+    chrsz = 8;
+
+function hex_md5(b) {
+    return 'uuid_' + binl2hex(core_md5(str2binl(b), b.length * chrsz))
+}
+function b64_md5(b) {
+    return binl2b64(core_md5(str2binl(b), b.length * chrsz))
+}
+
+function str_md5(b) {
+    return binl2str(core_md5(str2binl(b), b.length * chrsz))
+}
+function hex_hmac_md5(b, g) {
+    return binl2hex(core_hmac_md5(b, g))
+}
+function b64_hmac_md5(b, g) {
+    return binl2b64(core_hmac_md5(b, g))
+}
+function str_hmac_md5(b, g) {
+    return binl2str(core_hmac_md5(b, g))
+}
+
+function core_md5(b, g) {
+    b[g >> 5] |= 128 << g % 32;
+    b[(g + 64 >>> 9 << 4) + 14] = g;
+    for (var a = 1732584193, c = -271733879, e = -1732584194, d = 271733878, f = 0; f < b.length; f += 16) var h = a,
+        k = c,
+        l = e,
+        m = d,
+        a = md5_ff(a, c, e, d, b[f + 0], 7, -680876936),
+        d = md5_ff(d, a, c, e, b[f + 1], 12, -389564586),
+        e = md5_ff(e, d, a, c, b[f + 2], 17, 606105819),
+        c = md5_ff(c, e, d, a, b[f + 3], 22, -1044525330),
+        a = md5_ff(a, c, e, d, b[f + 4], 7, -176418897),
+        d = md5_ff(d, a, c, e, b[f + 5], 12, 1200080426),
+        e = md5_ff(e, d, a, c, b[f + 6], 17, -1473231341),
+        c = md5_ff(c, e, d, a, b[f + 7], 22, -45705983),
+        a = md5_ff(a, c, e, d, b[f + 8], 7, 1770035416),
+        d = md5_ff(d, a, c, e, b[f + 9], 12, -1958414417),
+        e = md5_ff(e, d, a, c, b[f + 10], 17, -42063),
+        c = md5_ff(c, e, d, a, b[f + 11], 22, -1990404162),
+        a = md5_ff(a, c, e, d, b[f + 12], 7, 1804603682),
+        d = md5_ff(d, a, c, e, b[f + 13], 12, -40341101),
+        e = md5_ff(e, d, a, c, b[f + 14], 17, -1502002290),
+        c = md5_ff(c, e, d, a, b[f + 15], 22, 1236535329),
+        a = md5_gg(a, c, e, d, b[f + 1], 5, -165796510),
+        d = md5_gg(d, a, c, e, b[f + 6], 9, -1069501632),
+        e = md5_gg(e, d, a, c, b[f + 11], 14, 643717713),
+        c = md5_gg(c, e, d, a, b[f + 0], 20, -373897302),
+        a = md5_gg(a, c, e, d, b[f + 5], 5, -701558691),
+        d = md5_gg(d, a, c, e, b[f + 10], 9, 38016083),
+        e = md5_gg(e, d, a, c, b[f + 15], 14, -660478335),
+        c = md5_gg(c, e, d, a, b[f + 4], 20, -405537848),
+        a = md5_gg(a, c, e, d, b[f + 9], 5, 568446438),
+        d = md5_gg(d, a, c, e, b[f + 14], 9, -1019803690),
+        e = md5_gg(e, d, a, c, b[f + 3], 14, -187363961),
+        c = md5_gg(c, e, d, a, b[f + 8], 20, 1163531501),
+        a = md5_gg(a, c, e, d, b[f + 13], 5, -1444681467),
+        d = md5_gg(d, a, c, e, b[f + 2], 9, -51403784),
+        e = md5_gg(e, d, a, c, b[f + 7], 14, 1735328473),
+        c = md5_gg(c, e, d, a, b[f + 12], 20, -1926607734),
+        a = md5_hh(a, c, e, d, b[f + 5], 4, -378558),
+        d = md5_hh(d, a, c, e, b[f + 8], 11, -2022574463),
+        e = md5_hh(e, d, a, c, b[f + 11], 16, 1839030562),
+        c = md5_hh(c, e, d, a, b[f + 14], 23, -35309556),
+        a = md5_hh(a, c, e, d, b[f + 1], 4, -1530992060),
+        d = md5_hh(d, a, c, e, b[f + 4], 11, 1272893353),
+        e = md5_hh(e, d, a, c, b[f + 7], 16, -155497632),
+        c = md5_hh(c, e, d, a, b[f + 10], 23, -1094730640),
+        a = md5_hh(a, c, e, d, b[f + 13], 4, 681279174),
+        d = md5_hh(d, a, c, e, b[f + 0], 11, -358537222),
+        e = md5_hh(e, d, a, c, b[f + 3], 16, -722521979),
+        c = md5_hh(c, e, d, a, b[f + 6], 23, 76029189),
+        a = md5_hh(a, c, e, d, b[f + 9], 4, -640364487),
+        d = md5_hh(d, a, c, e, b[f + 12], 11, -421815835),
+        e = md5_hh(e, d, a, c, b[f + 15], 16, 530742520),
+        c = md5_hh(c, e, d, a, b[f + 2], 23, -995338651),
+        a = md5_ii(a, c, e, d, b[f + 0], 6, -198630844),
+        d = md5_ii(d, a, c, e, b[f + 7], 10, 1126891415),
+        e = md5_ii(e, d, a, c, b[f + 14], 15, -1416354905),
+        c = md5_ii(c, e, d, a, b[f + 5], 21, -57434055),
+        a = md5_ii(a, c, e, d, b[f + 12], 6, 1700485571),
+        d = md5_ii(d, a, c, e, b[f + 3], 10, -1894986606),
+        e = md5_ii(e, d, a, c, b[f + 10], 15, -1051523),
+        c = md5_ii(c, e, d, a, b[f + 1], 21, -2054922799),
+        a = md5_ii(a, c, e, d, b[f + 8], 6, 1873313359),
+        d = md5_ii(d, a, c, e, b[f + 15], 10, -30611744),
+        e = md5_ii(e, d, a, c, b[f + 6], 15, -1560198380),
+        c = md5_ii(c, e, d, a, b[f + 13], 21, 1309151649),
+        a = md5_ii(a, c, e, d, b[f + 4], 6, -145523070),
+        d = md5_ii(d, a, c, e, b[f + 11], 10, -1120210379),
+        e = md5_ii(e, d, a, c, b[f + 2], 15, 718787259),
+        c = md5_ii(c, e, d, a, b[f + 9], 21, -343485551),
+        a = safe_add(a, h),
+        c = safe_add(c, k),
+        e = safe_add(e, l),
+        d = safe_add(d, m);
+    return [a, c, e, d]
+}
+function md5_cmn(b, g, a, c, e, d) {
+    return safe_add(bit_rol(safe_add(safe_add(g, b), safe_add(c, d)), e), a)
+}
+function md5_ff(b, g, a, c, e, d, f) {
+    return md5_cmn(g & a | ~g & c, b, g, e, d, f)
+}
+function md5_gg(b, g, a, c, e, d, f) {
+    return md5_cmn(g & c | a & ~c, b, g, e, d, f)
+}
+
+function md5_hh(b, g, a, c, e, d, f) {
+    return md5_cmn(g ^ a ^ c, b, g, e, d, f)
+}
+function md5_ii(b, g, a, c, e, d, f) {
+    return md5_cmn(a ^ (g | ~c), b, g, e, d, f)
+}
+function core_hmac_md5(b, g) {
+    var a = str2binl(b);
+    16 < a.length && (a = core_md5(a, b.length * chrsz));
+    for (var c = Array(16), e = Array(16), d = 0; 16 > d; d++) c[d] = a[d] ^ 909522486, e[d] = a[d] ^ 1549556828;
+    a = core_md5(c.concat(str2binl(g)), 512 + g.length * chrsz);
+    return core_md5(e.concat(a), 640)
+}
+function safe_add(b, g) {
+    var a = (b & 65535) + (g & 65535);
+    return (b >> 16) + (g >> 16) + (a >> 16) << 16 | a & 65535
+}
+
+function bit_rol(b, g) {
+    return b << g | b >>> 32 - g
+}
+function str2binl(b) {
+    for (var g = [], a = (1 << chrsz) - 1, c = 0; c < b.length * chrsz; c += chrsz) g[c >> 5] |= (b.charCodeAt(c / chrsz) & a) << c % 32;
+    return g
+}
+function binl2str(b) {
+    for (var g = "", a = (1 << chrsz) - 1, c = 0; c < 32 * b.length; c += chrsz) g += String.fromCharCode(b[c >> 5] >>> c % 32 & a);
+    return g
+}
+function binl2hex(b) {
+    for (var g = hexcase ? "0123456789ABCDEF" : "0123456789abcdef", a = "", c = 0; c < 4 * b.length; c++) a += g.charAt(b[c >> 2] >> c % 4 * 8 + 4 & 15) + g.charAt(b[c >> 2] >> c % 4 * 8 & 15);
+    return a
+}
+
+function binl2b64(b) {
+    for (var g = "", a = 0; a < 4 * b.length; a += 3) for (var c = (b[a >> 2] >> a % 4 * 8 & 255) << 16 | (b[a + 1 >> 2] >> (a + 1) % 4 * 8 & 255) << 8 | b[a + 2 >> 2] >> (a + 2) % 4 * 8 & 255, e = 0; 4 > e; e++) g = 8 * a + 6 * e > 32 * b.length ? g + b64pad : g + "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charAt(c >> 6 * (3 - e) & 63);
+    return g
+}
+
+function searchkey(attributes, cb) {
+    var url = hotAppHost + "/api/searchkey";
+    var data = {
+        appkey: hotAppKey,
+    };
+    for (var prop in attributes) {
+        data[prop] = attributes[prop];
+    }
+    http(url, data, cb);
+}
+
+function get(key, cb) {
+    var url = hotAppHost + "/api/get";
+    var data = {
+        appkey: hotAppKey,
+        key: key
+    };
+    http(url, data, cb);
+}
+
+function post(key, value, cb) {
+    var url = hotAppHost + "/api/post";
+    var data = {
+        appkey: hotAppKey,
+        key: key,
+        value: value
+    };
+    http(url, data, cb);
+}
+
+function del(key, cb) {
+    var url = hotAppHost + "/api/delete";
+    var data = {
+        appkey: getHotAppKey(),
+        key: key
+    };
+    http(url, data, cb);
+}
+
+function feedback(content, content_type, contract_info, cb) {
+    var system_info = getSystemInfo();
+    var user_info = getUserInfo();
+    if (!user_info) {
+        log('userinfo is empty');
+        return typeof cb == 'function' && cb(false);
+    }
+    var url = hotAppHost + "/api/feedback";
+    var data = {
+        appkey: getHotAppKey(),
+        content: content,
+        openid: getOpenID() ? getOpenID() : getFakeOpenID(),
+        content_type: content_type,
+        contract_info: contract_info,
+        system_info: system_info,
+        user_info: user_info
+    };
+    http(url, data, cb);
+}
+
+function uploadFeedbackImage(cb) {
+    wx.chooseImage({
+        success: function (res) {
+            console.log(res);
+            var tempFilePaths = res.tempFilePaths
+            wx.uploadFile({
+                url: hotAppHost + "/api/feedback/image/upload",
+                filePath: tempFilePaths[0],
+                name: 'file',
+                formData: {
+                    'appkey': getHotAppKey()
+                },
+                success: function (res) {
+                    var data = JSON.parse(res.data);
+                    if (data.ret == 0) {
+                        return typeof cb == 'function' && cb(data.image_url);
+                    } else {
+                        return typeof cb == 'function' && cb(false);
+                    }
+                },
+                fail: function (res) {
+                    return typeof cb == 'function' && cb(false);
+                }
+            })
+        },
+        fail: function (res) {
+            return typeof cb == 'function' && cb(false);
+            console.log(false);
+        }
+    })
+}
+
+function http(url, data, cb) {
+    //判断如果没有联网就不发送数据
+    wx.getNetworkType({
+        success: function(res) {
+            var networkType = res.networkType; // 返回网络类型2g，3g，4g，wifi
+            if(networkType == 'none'){
+                return false;
+            }else{
+                wx.request({
+                    url: url,
+                    data: data,
+                    method: 'POST',
+                    header: {
+                        'content-type': 'application/json'
+                    },
+                    success: function (res) {
+                        return typeof cb == "function" && cb(res.data)
+                    },
+                    fail: function () {
+                        return typeof cb == "function" && cb(false)
+                    }
+                });
+            };
+        },
+    });
+
+}
+
+function request(obj) {
+    if (obj.useProxy == false) {
+        wx.request({
+            url: obj.url,
+            data: obj.data,
+            header: obj.header,
+            method: obj.method,
+            success: function (res) {
+                obj.success(res);
+            },
+            fail: function (res) {
+                obj.fail(res);
+            },
+            complete: function (res) {
+                obj.complete(res);
+            }
+        });
+        return;
+    }
+
+    if (hotAppKey == '') {
+        log('hotappkey is empty');
+    } else {
+        wx.request({
+            url: hotAppHost + "/proxy/?appkey=" + hotAppKey + "&url=" + obj.url,
+            data: obj.data,
+            header: obj.header,
+            method: obj.method,
+            success: function (res) {
+                obj.success(res);
+            },
+            fail: function (res) {
+                obj.fail(res);
+            },
+            complete: function (res) {
+                obj.complete(res);
+            }
+        });
+    }
+}
+
+function onLoad(that, options) {
+    if (typeof that != 'object' || !that.__route__) {
+        log('param error');
+        return;
+    }
+
+    if (typeof options != 'object' || Object.getOwnPropertyNames(options).length == 0) {
+        log('param error');
+        return;
+    }
+
+    if (hotAppKey == '') {
+        log('hotapp key is empty');
+        return;
+    }
+
+    login(function(openId) {
+        var url = hotAppHost + "/data/wechat/param";
+        var data = {
+            hotAppKey: hotAppKey,
+            page: that.__route__,
+            openId: openId,
+            hotAppUUID: getHotAppUUID(),
+            paraInfo: options
+        }
+
+        if (options.hotappsharechannel == 1 && getOpenID()) {
+            if (!userInfo) {
+                wx.getUserInfo({
+                  success: function(res){
+                    data.paraInfo.userInfo = res.userInfo;
+                    http(url, data);
+                  }
+                })
+            } else {
+                data.paraInfo.userInfo = userInfo;
+                http(url, data);
+            }
+        } else {
+            http(url, data);
+        }
+    });
+}
+
+function onShare(that, title, desc,params) {
+    if(getOpenID()==''){
+        log('请在hotapp后台设置APPid和APPsecret')
+    }
+
+    if (typeof that != 'object' || !that.__route__) {
+        log('this error');
+        return;
+    }
+    if (hotAppKey == '') {
+        log('hotapp key is empty');
+        return;
+    } else {
+        var url = hotAppHost + "/data/wechat/share";
+        var data = {
+            hotAppKey: hotAppKey,
+            page: that.__route__,
+            openId: getOpenID(),
+            hotAppUUID: getHotAppUUID(),
+            params:params
+        }
+        http(url, data);
+        if(typeof params=='object'){
+        let paramsArray = []
+    Object.keys(params).forEach(key => paramsArray.push(key + '=' + encodeURIComponent(params[key])))
+    var shareurl = that.__route__ + '?hotapp_share_id=' + getOpenID() +'&'+paramsArray.join('&')
+   }else{
+       shareurl= that.__route__ + '?hotapp_share_id=' + getOpenID() 
+   }
+        return {
+            title: title,
+            desc: desc,
+            path: shareurl
+        }
+    }
+}
+
+module.exports = {
+    init: init,
+    onEvent: onEvent,
+    setEventUploadType: setEventUploadType,
+    clearData: clearData,
+    wxlogin: login,
+    getFakeOpenID: getFakeOpenID,
+    getOpenID: getOpenID,
+    getPrefix: getPrefix,
+    genPrimaryKey: genPrimaryKey,
+    replaceOpenIdKey: replaceOpenIdKey,
+    searchkey: searchkey,
+    get: get,
+    post: post,
+    del: del,
+    request: request,
+    getVersion: getVersion,
+    setDebug: setDebug,
+    feedback: feedback,
+    uploadFeedbackImage: uploadFeedbackImage,
+    onError: onError,
+    onLoad: onLoad,
+    onShare:onShare
+}
