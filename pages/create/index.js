@@ -76,10 +76,15 @@ Page({
         api.store(this.data.item, function(res) {
             if (res) {
                 wx.showToast({
-                    title: "保存成功"
-                });
-                //返回首页
-                wx.navigateBack();
+                    title: "保存成功",
+                    success:function(){
+                        // 返回首页
+                        setTimeout(function(){
+                            wx.hideToast();
+                            wx.navigateBack();
+                        },1000)
+                    }
+                });  
             } else {
                 wx.showToast({
                     title: "保存失败"

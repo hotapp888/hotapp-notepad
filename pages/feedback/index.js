@@ -11,21 +11,7 @@ Page({
   data: {
     flag: true,//加号的控制打开/关闭
     userInfo: [],//用户信息，用于头像显示
-    feedback: [{
-      content: '你可以留下联系方式，文本，图片，进行反馈',
-      content_type: 0,
-      contract_info: '',//弹出框input值
-      myDate: '',
-      role: false,
-      img: '../../images/hotapp_01_03.png',
-    }, {
-      content: '【系统消息】：您的反馈已收到，稍后给您回复',
-      content_type: 0,
-      contract_info: '',
-      myDate: '',
-      role: true,
-      img: "../../images/hotapp_01_07.png"
-    }
+    feedback: [
     ],//返回数据
     minutes: '',//分钟间隔
     addinput: '',//清楚input框的值
@@ -39,13 +25,13 @@ Page({
   /***
    * 分享功能
    */
-  onShareAppMessage: function () {
-    return {
-      title: '热点记事本',
-      desc: '小程序二维码精准统计平台hotapp,技术讨论QQ群：173063969',
-      path: '/pages/about/feedback?hotappPath=feedback'
-    }
-  },
+  // onShareAppMessage: function () {
+  //   return {
+  //     title: '热点记事本',
+  //     desc: '小程序二维码精准统计平台hotapp,技术讨论QQ群：173063969',
+  //     path: '/pages/about/feedback?hotappPath=feedback'
+  //   }
+  // },
 
   onLoad: function (options) {
     hotapp.onLoad(this, options);

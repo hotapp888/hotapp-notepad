@@ -15,7 +15,7 @@ App({
         
         //使用HotApp小程序统计，统计小程序新增，日活，留存，当日可查看统计结果
         //线上发布
-        hotapp.init('hotapp2427615');
+        hotapp.init('hotapp11377340');
         // 输入debug错误日志, 建议生产环境不要开启
         hotapp.setDebug(true);  
     },

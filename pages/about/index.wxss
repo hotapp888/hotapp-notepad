@@ -13,6 +13,7 @@
 }
 .h1{
    font-weight: bold;
+   margin-bottom: 20rpx;
 }
 .h1content{
   font-size: 12px;

@@ -14,14 +14,14 @@ Page({
             key: "",
             value: {
                 title: "",
-                content: ""
+                content: []
             },
             create_time: "",
             update_time: "",
             state: 1
         },
         isNew: false,
-        focus: true
+        focus: false,
     },
     /**
      * 分享功能
@@ -37,9 +37,10 @@ Page({
      * 页面首次加载事件
      */
     onLoad: function(options) {
-        var item = this.data.item;
+        var that = this;
+        var item = that.data.item;
         item.key = options.key;
-        this.setData({
+        that.setData({
             item: item
         });
     },
@@ -48,9 +49,9 @@ Page({
      * 页面渲染事件
      */
     onShow: function() {
-        this.loadData(this.data.item.key);        
+        var that = this;
+        that.loadData(that.data.item.key);
     },
-    
     /**
      * 保存数据事件
      */
@@ -63,7 +64,11 @@ Page({
         });
         this.saveData();
     },
-    
+    onFocus:function(e){
+        this.setData({
+            focus: true,
+        });
+    },
     /**
      * 请求服务器保存数据
      */
@@ -77,10 +82,15 @@ Page({
         api.store(this.data.item, function(res) {
             if (res) {
                 wx.showToast({
-                    title: "保存成功"
+                    title: "保存成功",
+                    success:function(){
+                        // 返回首页
+                        setTimeout(function(){
+                            wx.hideToast();
+                            wx.navigateBack();
+                        },1000)
+                    }
                 });
-                //返回首页
-                wx.navigateBack();
             } else {
                 wx.showToast({
                     title: "保存失败"
@@ -96,11 +106,15 @@ Page({
         api.destroy(this.data.item, function(res) {
             if (res) {
                 wx.showToast({
-                    title: "删除成功"
+                    title: "删除成功",
+                    success:function(){
+                        // 返回首页
+                        setTimeout(function(){
+                            wx.hideToast();
+                            wx.navigateBack();
+                        },1000)
+                    }
                 });
-                wx.redirectTo({
-                    url: "../index/index"
-                })
             } else {
                 wx.showToast({
                     title: "删除失败"
@@ -114,9 +128,11 @@ Page({
      */
     loadData: function(key) {
         var that = this;
-        api.show(this.data.item.key, function(res) {
+        api.show(that.data.item.key, function(res) {
+            var item = api.formatItem(res);
+            item.value.content = item.value.content;
             that.setData({
-                item: res
+                item: item
             });
         });
     }

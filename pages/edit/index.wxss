@@ -25,22 +25,26 @@ page{
 }
 .row{
     flex: 1;
-    display: flex;
+
     width: 90%;
-    height: auto;
+    height: 100%;
     margin: 0 5%;
     overflow: hidden;
 }
 .row .text{
+
     width: 100%;
-    flex: 1;
-    height: auto;
-    font-size: 36rpx;
+    height: 100%;
+    font-size: 16px;
     color: #666;
 }
-
+.view_text{
+    font-size: 13px;
+}
 .date{
-    padding: 10rpx 0;
+    width: 100%;
+    padding: 5rpx 0;
+    text-align: center;
 }
 .bottom{
     width: 100%;
@@ -53,7 +57,8 @@ page{
 .bottom .btn{
     flex: 1;
     line-height: 2;
-    padding: 10rpx 20rpx;
+    padding-top: 10rpx;
+    padding-bottom: 10rpx;
     margin: 30rpx 30rpx;
 }
 .btn.success{

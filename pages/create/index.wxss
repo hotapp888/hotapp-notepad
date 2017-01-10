@@ -27,15 +27,16 @@ page{
     flex: 1;
     display: flex;
     width: 90%;
-    height: auto;
+    height: 100%;
     margin: 0 5%;
     overflow: hidden;
 }
 .row .text{
     flex: 1;
     width: 100%;
-    height: auto;
-    font-size: 36rpx;
+    height: 100%;
+    font-size: 16px;
+    line-height: 26px;
     color: #666;
 }
 .date{

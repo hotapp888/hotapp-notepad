@@ -109,42 +109,71 @@ function show(key, cb) {
  */
 function store(item, cb) {
     var that = this;
+    item = that.formatItem(item);
     this.getItems(function(items) {
-        that.updateVersion(function(success) {
-            if (success) {
-                hotapp.post(item.key, item.value, function(res) {
-                    if (res.ret == 0) {
-                        item = res.data;
-                        item.state = 2;
-                    } else {
-                        item.state = 1;
-                    }
-                    item = that.formatItem(item);
-                    var isNew = true;
-                    items.forEach(function(oldItem, index, arr) {
-                        if (oldItem.key == item.key) {
-                            arr[index] = item;
-                            isNew = false;
-                        }
-                    });
-                    if (isNew) {
-                        // 向hotapp统计发送新增事件,可知道用户每天新增次数
-                        hotapp.onEvent('new'); 
-                        items.push(item);
-                        items.sort(function(a, b) {
-                            return a.create_time < b.create_time;
-                        });
-                    } else {
-                        // 向hotapp统计发送保存事件,可知道用户每天保存次数
-                        hotapp.onEvent('store'); 
-                    }
-                    wx.setStorageSync('items', items);
-                    return typeof cb == 'function' && cb(true);
-                });
+        var isNew = true;
+        items.forEach(function(oldItem, index, arr) {
+            if (oldItem.key == item.key) {
+                arr[index] = item;
+                isNew = false;
             }
         });
-        
-    });
+        if (isNew) {
+            // 向hotapp统计发送新增事件,可知道用户每天新增次数
+            hotapp.onEvent('new'); 
+            items.push(item);
+            items.sort(function(a, b) {
+                return a.create_time < b.create_time;
+            });
+            wx.setStorageSync('items', items);
+        } else {
+            // 向hotapp统计发送保存事件,可知道用户每天保存次数
+            hotapp.onEvent('store'); 
+            wx.setStorageSync('items', items);
+        }
+        wx.getNetworkType({
+            success: function(res) {
+                var networkType = res.networkType; // 返回网络类型2g，3g，4g，wifi
+                if(networkType == 'none'){
+                    wx.showToast({
+                        title: "保存成功",
+                        success:function(){
+                            // 返回首页
+                            setTimeout(function(){
+                                wx.hideToast();
+                                wx.navigateBack();
+                            },1000)
+                        }
+                    });
+                }else{
+                    wx.showToast({
+                        title: '正在同步数据',
+                        icon: 'loading'
+                    });
+                    that.updateVersion(function(success) {
+                        if (success) {
+                            hotapp.post(item.key, item.value, function(res) {
+                                if (res.ret == 0) {
+                                    item = res.data;
+                                    item.state = 2;
+                                } else {
+                                    item.state = 1;
+                                }
+                                items.forEach(function(oldItem, index, arr) {
+                                    if (oldItem.key == item.key) {
+                                        arr[index] = item;
+                                    }
+                                });
+                                wx.setStorageSync('items', items);
+                                return typeof cb == 'function' && cb(true);
+                            })
+
+                        }
+                    });
+                };
+            },
+        });      
+    })
 }
 
 /**
@@ -153,24 +182,34 @@ function store(item, cb) {
 function destroy(item, cb) {
     var that = this;
     this.getItems(function(items) {
-        that.updateVersion(function(success) {
-            if (success) {
-                // 向hotapp统计发送删除事件,后台可知晓用户删除了哪些标题
-                hotapp.onEvent('delete', item.value.title);
-                hotapp.del(item.key, function(res) {
-                    if (res.ret == 0) {
-                        that.updateVersion();
-                    }
-                    items.forEach(function(oldItem, index, arr) {
-                        if (oldItem.key == item.key) {
-                            oldItem.state = 3;
-                            wx.setStorageSync('items', arr);
-                            return typeof cb == 'function' && cb(true);
-                        }
-                    });
-                });
+        items.forEach(function(oldItem, index, arr) {
+            if (oldItem.key == item.key) {
+                oldItem.state = 3;
+                wx.setStorageSync('items', arr);
             }
         });
+        wx.getNetworkType({
+            success: function(res) {
+                var networkType = res.networkType; // 返回网络类型2g，3g，4g，wifi
+                if(networkType !='none'){
+                    that.updateVersion(function(success) {
+                        if (success) {
+                            // 向hotapp统计发送删除事件,后台可知晓用户删除了哪些标题
+                            hotapp.onEvent('delete', item.value.title);
+                            hotapp.del(item.key, function(res) {
+                                if (res.ret == 0) {
+                                    that.updateVersion();
+                                    return typeof cb == 'function' && cb(true);
+                                };
+                            });
+                        };
+                    });
+                }else{
+                    return typeof cb == 'function' && cb(true);
+                };
+            },
+        });
+        
     });
 }
 

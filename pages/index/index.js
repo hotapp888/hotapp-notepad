@@ -13,7 +13,7 @@ Page({
     items: [],
   },
 
-  onLoad: function(options) {
+  onLoad: function (options) {
     //二维码参数统计
     hotapp.onLoad(this, options);
   },
@@ -21,30 +21,28 @@ Page({
   /**
    * 首次渲染事件
    */
-  onShow: function() {
-    this.setData({
-      items: []
-    });
+  onShow: function () {
     // 获取数据
     var that = this;
-    hotapp.wxlogin(function(res) {
-        that.onLoadData();
+    hotapp.wxlogin(function (res) {
+      that.onLoadData();
     });
   },
   /**
    * 分享网页
    */
-   onShareAppMessage: function () {
-    return {
-      title: '热点记事本',
-      desc: '小程序二维码精准统计平台hotapp,技术讨论QQ群：173063969',
-      path: '/pages/about/index?hotappPath=index'
-    }
+  onShareAppMessage: function () {
+    // return {
+    //   title: '热点记事本',
+    //   desc: '小程序二维码精准统计平台hotapp,技术讨论QQ群：173063969',
+    //   path: '/pages/about/index?id=页面参数&userId=备注信息'
+    // }
+   return  hotapp.onShare(this, '热点记事本', '微信小程序记事本，笔记云端同步');
   },
   /**
    * 新增笔记事件
    */
-  onNewItem: function(event) {
+  onNewItem: function (event) {
     wx.navigateTo({
       url: "../create/index"
     })
@@ -53,28 +51,32 @@ Page({
   /**
    * 编辑笔记事件
    */
-  onEditItem: function(event) {
+  onEditItem: function (event) {
     wx.navigateTo({
-       url: '../edit/index?key=' + event.currentTarget.dataset.key
+      url: '../edit/index?key=' + event.currentTarget.dataset.key
     })
   },
 
   /**
    * 获取数据事件
    */
-  onLoadData: function() {
+  onLoadData: function () {
     var that = this;
-    api.getItems(function(items) {
-      that.setData({
-        items: items
-      });
+    api.getItems(function (items) {
+        //设置时间
+        for(var i=0; i<items.length; i++){
+            items[i] = api.formatItem(items[i]);
+        }
+        that.setData({
+          items: items
+        });
     });
   },
 
   /**
    * 下拉刷新事件, 数据同步
    */
-  onPullDownRefresh: function() {
+  onPullDownRefresh: function () {
     wx.showToast({
       title: '正在同步数据',
       icon: 'loading'
@@ -84,20 +86,20 @@ Page({
     var tempData = this.data.items;
     var that = this;
     // 先检查版本, 如果和服务器版本不同, 则需要从服务器拉取数据
-    api.checkVersion(function(shouldPullData) {
+    api.checkVersion(function (shouldPullData) {
       if (shouldPullData) {
         var filters = {
           prefix: hotapp.getPrefix('item')
         };
         // 从服务器拉取所有数据
-        hotapp.searchkey(filters, function(res) {
+        hotapp.searchkey(filters, function (res) {
           if (res.ret == 0) {
             // 拉取成功, 更新版本号
-            api.updateVersion(function(success) {
+            api.updateVersion(function (success) {
               if (success) {
                 // 更新版本号之后把本地数据和服务器数据合并去重
                 tempData = that.syncServerDatatoLocal(tempData, res.data.items);
-                tempData.forEach(function(item, index, arr) {
+                tempData.forEach(function (item, index, arr) {
                   arr[index] = api.formatItem(item);
                   arr[index].state = 2;
                 });
@@ -106,16 +108,19 @@ Page({
                   items: tempData
                 });
                 // 把合并好的数据存缓存
-                
                 wx.setStorageSync('items', tempData);
                 that.syncLocalDataToServer(tempData);
+                wx.stopPullDownRefresh();
+                wx.hideToast();
               }
             });
           }
-        }); 
+        });
       } else {
         // 版本号和服务器相同, 则不需要从服务器上拉取数据, 直接同步数据到服务器
         that.syncLocalDataToServer(tempData);
+        wx.stopPullDownRefresh();
+        wx.hideToast();
       }
     });
   },
@@ -123,16 +128,16 @@ Page({
   /**
    * 将本地数据同步到服务器
    */
-  syncLocalDataToServer: function(data) {
+  syncLocalDataToServer: function (data) {
     var that = this;
     // 遍历所有的数据
-    data.forEach(function(item, index, items) {
-      hotapp.replaceOpenIdKey(item.key, function(newKey) {
+    data.forEach(function (item, index, items) {
+      hotapp.replaceOpenIdKey(item.key, function (newKey) {
         if (newKey) {
           item.key = newKey;
           // 如果还有数据没有同步过, 则调用post接口同步到服务器
           if (item.state == 1) {
-            hotapp.post(item.key, item.value, function(res) {
+            hotapp.post(item.key, item.value, function (res) {
               if (res.ret == 0) {
                 // 同步成功后更新状态, 并存缓存
                 item.state = 2;
@@ -147,7 +152,7 @@ Page({
 
           // 如果数据被删除过, 则调用delete接口从服务器删除数据
           if (item.state == 3) {
-            hotapp.del(item.key, function(res) {
+            hotapp.del(item.key, function (res) {
               if (res.ret == 0 || res.ret == 103) {
                 // 服务器的数据删除成功后, 删除本地数据并更新缓存
                 items.splice(index, 1);
@@ -168,24 +173,24 @@ Page({
   /**
    * 将服务器的数据同步到本地
    */
-  syncServerDatatoLocal: function(localData, serverData) {
+  syncServerDatatoLocal: function (localData, serverData) {
     var that = this;
 
     // 通过hash的性质去重, 服务器数据覆盖本地数据
     // 但是要保留本地中状态为已删除的数据
     // 删除的逻辑不在这里处理
     var localHash = new Array();
-    localData.forEach(function(item) {
+    localData.forEach(function (item) {
       localHash[item.key] = item;
     });
 
     var serverHash = new Array();
-    serverData.forEach(function(item) {
+    serverData.forEach(function (item) {
       serverHash[item.key] = item;
     });
 
     // 先把服务器上有的数据但是本地没有的数据合并
-    serverData.forEach(function(item) {
+    serverData.forEach(function (item) {
       var t = localHash[item.key];
       // 有新增的数据
       if (!t) {
@@ -200,7 +205,7 @@ Page({
     });
 
     // 然后再删除本地同步过的但是服务器上没有的缓存数据(在其它设备上删除过了)
-    localData.forEach(function(item, index, arr) {
+    localData.forEach(function (item, index, arr) {
       var t = serverHash[item.key];
       if (!t && item.state == 2) {
         delete localHash[item.key];
@@ -214,7 +219,7 @@ Page({
     }
 
     // 按时间排序
-    result.sort(function(a, b) {
+    result.sort(function (a, b) {
       return a.create_time < b.create_time;
     });
 
