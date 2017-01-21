@@ -1,6 +1,10 @@
 HotApp云笔记, 是基于[HotApp小程序统计云后台](https://weixin.hotapp.cn)提供的api接口开发的一个微信小程序
 
 
+# 2016-01-23 更新日志
+
+1 重构统计代码hotapp.js, 用户不需要写任何代码就可以使用统计功能,  使用起来更方便
+
 # 2016-01-03 更新日志
 
 1 添加 添加错误日志上传 错误日志地址:https://weixin.hotapp.cn/analysis/errorlog
