@@ -12,22 +12,33 @@ Page({
       url: '../feedback/index'
     })
   },
+  //扫一扫
+  scanCode: function () {
+    wx.scanCode({
+      success: (res) => {
+
+        this.setData({
+          userInfo: res.result
+        })
+      }
+    })
+  },
   onShareAppMessage: function () {
     return {
       title: '热点记事本反馈系统组件',
-      desc: '小程序二维码精准统计平台hotapp',
+      desc: '小程序二维码精准统计平台hotapp,技术讨论QQ群：173063969',
       path: '/pages/about/index?hotappPath=about'
     }
   },
   onLoad: function (option) {
-   
+
   },
   onReady: function () {
 
   },
   onShow: function () {
     // 生命周期函数--监听页面显示
-   
+
   },
   onHide: function () {
     // 生命周期函数--监听页面隐藏

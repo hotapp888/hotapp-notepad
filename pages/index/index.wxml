@@ -10,7 +10,7 @@
     <view class='col'>
         <view class='item add_box'  bindtap="onNewItem">
             <image class="add_bg" src="../../images/add.png" style="width:120rpx;height:120rpx;"></image>
-        </view> 
+        </view>
         <!--没有笔记时的提示-->
         <block wx:if="{{items.length < 1}}">
             <view class='tips'>
@@ -23,7 +23,7 @@
     </view>
 
     <!--笔记列表-->
-    <block wx:for="{{items}}">
+    <block wx:for="{{items}}" wx:key="{{key}}">
         <view class="col" wx:if="{{ item.state != 3 }}">
             <view class='item notepad {{item.class}}' data-key="{{item.key}}" bindtap="onEditItem">
                 <view class='content'>

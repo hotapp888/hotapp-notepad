@@ -1,4 +1,4 @@
-var hotapp = require('hotapp.js');
+var hotapp = require('./hotapp');
 
 /**
  * 更新版本号
@@ -39,7 +39,7 @@ function formatItem(item) {
     var create_time = new Date(parseInt(item.create_time) * 1000);
     item.date = create_time.getFullYear()+'-'+(create_time.getMonth()+1)+'-'+create_time.getDate();
     var update_time = new Date(item.update_time * 1000);
-    item.update_date = update_time.getFullYear() + "-" + (update_time.getMonth() + 1) + "-" + update_time.getDate(); 
+    item.update_date = update_time.getFullYear() + "-" + (update_time.getMonth() + 1) + "-" + update_time.getDate();
     //今天的日记和昨天的日记显示不同的颜色
 
     var d = new Date();
@@ -120,7 +120,7 @@ function store(item, cb) {
         });
         if (isNew) {
             // 向hotapp统计发送新增事件,可知道用户每天新增次数
-            hotapp.onEvent('new'); 
+            hotapp.onEvent('new');
             items.push(item);
             items.sort(function(a, b) {
                 return a.create_time < b.create_time;
@@ -128,7 +128,7 @@ function store(item, cb) {
             wx.setStorageSync('items', items);
         } else {
             // 向hotapp统计发送保存事件,可知道用户每天保存次数
-            hotapp.onEvent('store'); 
+            hotapp.onEvent('store');
             wx.setStorageSync('items', items);
         }
         wx.getNetworkType({
@@ -172,7 +172,7 @@ function store(item, cb) {
                     });
                 };
             },
-        });      
+        });
     })
 }
 
@@ -209,7 +209,7 @@ function destroy(item, cb) {
                 };
             },
         });
-        
+
     });
 }
 

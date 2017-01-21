@@ -4,25 +4,25 @@
 ***API 文档地址：https://weixin.hotapp.cn/api
 ***小程序技术讨论QQ群：173063969
 */
-var hotapp = require('utils/hotapp.js');
+
+var hotapp=require('./utils/hotapp');
+
+hotapp.setDebug(true);
 
 App({
-
     /**
      * 启动事件
      */
     onLaunch: function () {
-        
-        //使用HotApp小程序统计，统计小程序新增，日活，留存，当日可查看统计结果
-        //线上发布
-        hotapp.init('hotapp11377340');
-        // 输入debug错误日志, 建议生产环境不要开启
-        hotapp.setDebug(true);  
+        //user logic
     },
-    onError:function(msg){
-        //错误统计 2.0.0为版本号
-        hotapp.onError(msg,'2.0.0',function (err) {
-             console.log(err)
-        })
+    onShow: function(){
+        //user logic
+    },
+    onHide: function(){
+        //user logic
+    },
+    onError:function(err){
+        //
     }
 })

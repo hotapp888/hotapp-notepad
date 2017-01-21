@@ -25,16 +25,16 @@ Page({
   /***
    * 分享功能
    */
-  // onShareAppMessage: function () {
-  //   return {
-  //     title: '热点记事本',
-  //     desc: '小程序二维码精准统计平台hotapp,技术讨论QQ群：173063969',
-  //     path: '/pages/about/feedback?hotappPath=feedback'
-  //   }
-  // },
+  onShareAppMessage: function () {
+    return {
+      title: '热点记事本',
+      desc: '小程序二维码精准统计平台hotapp,技术讨论QQ群：173063969',
+      path: '/pages/about/feedback?hotappPath=feedback'
+    }
+  },
 
   onLoad: function (options) {
-    hotapp.onLoad(this, options);
+      //
   },
   onReady: function () {
     // 页面渲染完成
@@ -91,7 +91,6 @@ Page({
     })
     //提交输入框的数据
     if (e.detail.value != '' && this.data.networkType != 'fail') {
-
       //获取当前时间
       var myDate = new Date();
       var hours = myDate.getHours();       //获取当前小时数(0-23)

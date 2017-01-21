@@ -1,0 +1,29 @@
+{
+  "name": "hotapp-notepad",
+  "version": "1.0.0",
+  "description": "hotapp-notepad wechat liteapp",
+  "main": "app.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "uglify-js": "^2.7.5"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hotapp888/hotapp-notepad.git"
+  },
+  "keywords": [
+    "wechat"
+  ],
+  "author": "jack",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hotapp888/hotapp-notepad/issues"
+  },
+  "homepage": "https://github.com/hotapp888/hotapp-notepad#readme"
+}
